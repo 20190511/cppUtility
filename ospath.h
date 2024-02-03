@@ -1,3 +1,5 @@
+//Made By Junhyeong(0511) || Linux C++ SystemCall Utility Project
+
 #ifndef OSPATH_H
 #define OSPATH_H
 #include <iostream>
@@ -30,8 +32,8 @@ public:
     bool isFile(string s);      // 파일 존재 여부 확인
     bool isDir(string s);       // 파일이 디렉토리 인지 확인 
     bool mkdirs(string s);      // 복수 디렉토리 생성
-    bool fileCopy (string a, string b);
-    bool dirCopy (string a, string b);
+    bool fileCopy (string a, string b); //파일 복사
+    bool dirCopy (string a, string b); //디렉토리 복사
 
     deque<string> readDir(string s, bool all);
 }; 
@@ -138,6 +140,7 @@ bool path::fileCopy (string a="", string b="../backup") {
         fprintf(stderr, "%s can not open\n", a.c_str());
         return false;
     }
+
 
     if ((fd2 = open(b.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0744)) < 0) {
         fprintf(stderr, "%s can not open\n", a.c_str());
