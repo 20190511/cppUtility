@@ -2,7 +2,10 @@
 #define OSPATH_H
 #include <iostream>
 #include <string>
+
+#include <fcntl.h>
 #include <unistd.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -13,30 +16,152 @@ const char* pathToken = "/";
 
 class path {
 private:
-    string curPath;
+    string      curPath;
+    const int   READBUF = 1024;
 
 public:
     path (string s = getcwd(NULL, 0));
     ~path() {}    
-    string getCurPath();   // 현재경로
-    string fullPath(string s);  // s를 full 경로로 변경
-    string join(deque<string> d); //deque 값으로 path 경로 합치기
+    string getCurPath();            // 현재경로
+    string fullPath(string s);      // s를 full 경로로 변경
+    string join(deque<string> d);   //deque 값으로 path 경로 합치기
+    string motherDir(string s);     //모체 디렉토리
 
     bool isFile(string s);      // 파일 존재 여부 확인
     bool isDir(string s);       // 파일이 디렉토리 인지 확인 
+    bool mkdirs(string s);      // 복수 디렉토리 생성
     bool fileCopy (string a, string b);
+    bool dirCopy (string a, string b);
 
     deque<string> readDir(string s, bool all);
 }; 
 
-bool path::fileCopy (string a, string b) {
+bool path::mkdirs(string s) {
+    deque<string> sq = split(s, "/");
 
+    string start = "/";
+    while(!sq.empty()) {
+        start += sq.front();
+        sq.pop_front();
+        if (!isFile(start))   {
+            if (mkdir(start.c_str(), 0777) < 0) {
+                fprintf(stderr, "{mkdirs} mkdir error : %s\n", start.c_str());
+                return false; 
+            }
+        }
+        if (!sq.empty()) 
+            start += pathToken;
+    }
+    
+    return true;
+}
+
+
+string path::motherDir(string s) {
+    char p[1024] = {0,}, *ptr;
+    strcpy(p, s.c_str());
+    ptr = strrchr(p, pathToken[0]);
+    if (ptr == NULL)
+        return s;
+    *ptr = 0;
+    return string(p);
+}
+
+bool path::dirCopy (string a="", string b="../backup") {
+    if (!a.length())
+        a = curPath;
+    a = fullPath(a), b = fullPath(b);
+
+    if (!isDir(a)) {
+        fprintf(stderr, "{dirCopy} %s is not directory!!\n", a.c_str());
+        return false;
+    }
+    else if (!access(b.c_str(), F_OK) && !isDir(b)) {
+        fprintf(stderr, "{dirCopy} %s is already existed (And not direcotry)!!\n", b.c_str());
+        return false;
+    }
+    else if (access(b.c_str(), F_OK)) {
+        cout<<"make directory --> "<<b<<endl;
+        mkdir(b.c_str(), 0777);
+    }
+
+    deque<string> fq = readDir(a, true);
+    while(!fq.empty()) {
+        string curFullS = fq.front();
+        string curS = string(curFullS).replace(0, a.length(), "");
+        fq.pop_front();
+        string nextS = join({b,curS});
+
+        if (isDir(curFullS)) {
+            if (isFile(nextS)) {
+                if (isDir(nextS))
+                    continue;
+                else {
+                    fprintf(stderr, "{dirCopy} %s can not be set directory\n", nextS.c_str());
+                    continue;
+                }
+            }
+            else {
+                cout<<"make directory --> "<<nextS<<endl;
+                if (mkdir(nextS.c_str(), 0777) < 0) {
+                    fprintf(stderr, "mkdir error : %s\n", nextS.c_str());
+                    continue;
+                }
+            }
+        }
+        else {
+            fileCopy(curFullS, nextS);
+        }
+    }
+    return true;
+}
+
+bool path::fileCopy (string a="", string b="../backup") {
+    if (a == "")
+        a = curPath;
+    
+    if (isDir(a)) {
+        fprintf (stderr, "{fileCopy} %s is directory File\n", a.c_str());
+        return false;
+    }
+
+    string md = motherDir(a);
+    if (!mkdirs(md))  {
+        fprintf(stderr, "mkdirs error : %s\n", md.c_str());
+        return false;
+    }
+    
+    cout<<a<<" --> "<<b<<endl;    
+    int fd1, fd2, d;
+    char buf[READBUF];
+    if ((fd1 = open(a.c_str(), O_RDONLY)) < 0) {
+        fprintf(stderr, "%s can not open\n", a.c_str());
+        return false;
+    }
+
+    if ((fd2 = open(b.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0744)) < 0) {
+        fprintf(stderr, "%s can not open\n", a.c_str());
+        return false;
+    }
+
+    while((d = read(fd1, buf, READBUF)) > 0) {
+        if (write(fd2, buf, d) != d) {
+            fprintf(stderr, "{fileCopy} %s file Copy error\n", a.c_str());
+            close(fd1);
+            close(fd2);
+            return false;
+        }
+    }
+
+    close(fd1);
+    close(fd2);
+    return true;
 }
 
 
 deque<string> path::readDir(string s = "", bool all = true)
 {
-    if (s == "")
+    if (!s.length())
         s = curPath;
     deque<string> pq, dirQueue({s});
     if (!isDir(curPath))
@@ -58,9 +183,8 @@ deque<string> path::readDir(string s = "", bool all = true)
                 if (isDir(dnt->d_name) && all) {
                     dirQueue.push_back(join({curDirPath, string(dnt->d_name)}));
                 }
-
-                pq.push_back(join({curPath, string(dnt->d_name)}));
-                cout<<join({curDirPath, string(dnt->d_name)})<<endl;
+                pq.push_back(join({curDirPath, string(dnt->d_name)}));
+                //cout<<join({curDirPath, string(dnt->d_name)})<<endl;
             }
         }
     }
@@ -76,8 +200,10 @@ string path::join(deque<string> d)
     while(!d.empty()) {
         retVal += d.front();
         d.pop_front();
-        if (!d.empty())
-            retVal += pathToken;
+        if (!d.empty()) {
+            if (d.front().at(0) != pathToken[0])
+                retVal += pathToken;
+        }
         else
             break;
     }
