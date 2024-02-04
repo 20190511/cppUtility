@@ -222,29 +222,14 @@ void transformer() {
             continue;
         }
 
-        if (curMod == -1)   {
+        if (curMod == -1)   
             cout<<"wrong mode"<<endl;
-        }
-        else {
+        else 
             cmdQ.push_back(pair<int,string>(curMod, line));
-            /*
-            */
-            
-        }
         memset(line, 0, 1024);
-        //installer(line);
     }
 
     fclose(fp);
-    /*
-    FILE* fp = fopen(INSTALLFILE, "r+");
-    if (fp == NULL) {
-        fprintf(stderr, "fopen error for %s\n", INSTALLFILE);
-        return;
-    }
-    */
-
-    //installer("yum");
 }
     
 
