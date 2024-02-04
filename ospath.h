@@ -14,7 +14,9 @@
 
 #include "stringExpand.h"
 using namespace std;
+
 const char* pathToken = "/";
+
 
 class path {
 private:
@@ -29,14 +31,50 @@ public:
     string join(deque<string> d);   //deque 값으로 path 경로 합치기
     string motherDir(string s);     //모체 디렉토리
 
+    bool isExecute(string s);   // 파일 실행 가능 여부 확인
     bool isFile(string s);      // 파일 존재 여부 확인
     bool isDir(string s);       // 파일이 디렉토리 인지 확인 
     bool mkdirs(string s);      // 복수 디렉토리 생성
     bool fileCopy (string a, string b); //파일 복사
     bool dirCopy (string a, string b); //디렉토리 복사
+    bool fileDelete (string a);     //파일&디렉토리 삭제
 
     deque<string> readDir(string s, bool all);
 }; 
+
+bool path::fileDelete (string a = "") 
+{
+    if (!a.length())
+        a = curPath;
+
+    if (!isFile(a)) {
+        cout<<"is not File --> "<<a<<endl;
+        return false;
+    }
+
+    if (!isDir(a)) {
+        unlink(a.c_str());
+        return false;
+    }
+
+    deque<string> dirQ =  readDir(a, true);
+    while (!dirQ.empty())
+    {
+        if (isDir(dirQ.back()))  {
+            cout<<"remove Directory --> "<<dirQ.back()<<endl;
+            rmdir(dirQ.back().c_str()); 
+        }
+        else {
+            cout<<"delete --> "<<dirQ.back()<<endl;
+            unlink(dirQ.back().c_str());
+        }
+        dirQ.pop_back();
+    }
+    cout<<"remove Directory --> "<<a<<endl;
+    rmdir(a.c_str());
+    return true;
+}
+
 
 bool path::mkdirs(string s) {
     deque<string> sq = split(s, "/");
@@ -141,8 +179,8 @@ bool path::fileCopy (string a="", string b="../backup") {
         return false;
     }
 
-
-    if ((fd2 = open(b.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0744)) < 0) {
+    int fileMode = isExecute(a) ? 0755 : 0644;
+    if ((fd2 = open(b.c_str(), O_WRONLY | O_TRUNC | O_CREAT, fileMode)) < 0) {
         fprintf(stderr, "%s can not open\n", a.c_str());
         return false;
     }
@@ -224,13 +262,11 @@ string path::fullPath(string s) {
     cout<<s<<endl;
     deque<string> dq = split(s, pathToken), dd;
     while(!dq.empty()) {
-        if (!dq.front().compare(".")) 
-            continue;
-        else if (!dq.front().compare(".."))  {
+        if (!dq.front().compare(".."))  {
             if(!dd.empty())
                 dd.pop_back();
         }
-        else
+        else if (dq.front().compare("."))
             dd.push_back(dq.front());   
         dq.pop_front();
     }
@@ -251,6 +287,19 @@ string path::fullPath(string s) {
 
 bool path::isFile(string s) {
     return !access(s.c_str(), F_OK);
+}
+bool path::isExecute(string s) {
+    if(!isFile(s)) {
+        return false;
+    }
+
+    struct stat sb;
+    if (stat(s.c_str(), &sb) < 0) {
+        fprintf(stderr, "%s cannot be accessed statbuf\n", s.c_str());
+        return false;
+    }
+
+    return sb.st_mode & S_IXUSR;
 }
 
 bool path::isDir(string s) {
