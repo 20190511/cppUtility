@@ -9,7 +9,8 @@
 
 
 ### 사용법
-- [script.tar.gz](https://github.com/20190511/cppUtility/files/14164715/script.tar.gz)
+- [script.tar.gz](https://github.com/20190511/cppUtility/files/14164813/script.tar.gz)
+
 ```powershell
 # wsl-linux 첫 사용 기준 -> script.tar.gz 다운로드 후 home/<Username> 에 붙여넣고 시작할 것
 sudo apt update
