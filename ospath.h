@@ -25,7 +25,6 @@ private:
 
 public:
     path (string s = getcwd(NULL, 0));
-    ~path() {}    
     string getCurPath();            // 현재경로
     string fullPath(string s);      // s를 full 경로로 변경
     string join(deque<string> d);   //deque 값으로 path 경로 합치기
@@ -326,7 +325,6 @@ path::path(string s) {
     if (!isFile(s)) {
         cout<<s<< " is not existed"<<endl;
         path::curPath = "";
-        path::~path();
         return;
     }
     struct stat st;
