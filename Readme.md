@@ -12,6 +12,10 @@
 - [script.tar.gz](https://github.com/20190511/cppUtility/files/14164093/script.tar.gz)
 ```powershell
 # wsl-linux 첫 사용 기준 -> script.tar.gz 다운로드 후 home/<Username> 에 붙여넣고 시작할 것
+## 윈도우 기준, 네트워크 아래보면 Linux 라는 것이 있어 여기를 통해 파일 이동이 가능.
+## 혹은 \\wsl.localhost\Ubuntu-<버전>\home\<Username> 으로 이동..
+## Ex)) \\wsl.localhost\Ubuntu-20.04\home\junhyeong
+
 sudo apt update
 sudo apt upgrade
 sudo apt-get install make
