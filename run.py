@@ -110,9 +110,10 @@ class PythonScriptor:
                 #cmdSplitter = cmdString.split(" ")
                 #print(f"run system ==> {cmdSplitter}") 
                 try:
-                    subprocess.run(cmdString, shell=True, timeout=20)
-                except subprocess.TimeoutExpired:
+                    subprocess.run(cmdString, shell=True)
+                except Exception:
                     print(f"수동으로 명령어를 입력해주십시오 : {cmdString}")
+                    exit(0)
             elif cmdNum == 2:                
                 if cmdString == "init":
                     os.chdir(self.pathQ[0])

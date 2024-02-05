@@ -1,0 +1,48 @@
+#주석처리 (지원 : 24.02.04)
+install:
+    update
+    upgrade
+    git-all
+    gcc
+    g++
+    gdb
+
+chdir:
+    ~
+run:
+    # 아나콘다 설치여부 및 설치
+    wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh [filecheck] ~/anaconda
+    mkdir anaconda [filecheck] ~/anaconda
+    anaconda/Anaconda3-2023.09-0-Linux-x86_64.sh [filecheck] ~/anaconda3 
+reChdir:
+    init
+
+run:
+    rm -rf ~/cotta2
+    mkdir ~/cotta2
+    conda update conda
+
+chdir:
+    ~/cotta2
+
+run:
+    # 기존 cotta 삭제
+    conda env remove -n cotta 
+
+    # cotta Library 받아오기
+    git init
+    git remote add cotta https://github.com/qinenergy/cotta.git
+    git pull cotta
+    git checkout cotta/main
+
+    # yaml 이용
+    conda env create -f environment.yml
+    echo "Finish Setting-CoTTa DEEP Learning <Junhyeong>"
+    
+reChdir:
+    init
+
+run:
+    # 자동으로 Python3 Scripter 진행 -> run.py 에서 실행 환경 스크립트 선택
+    echo "Start Run Python Script Transformer <Junhyeong> --> run.py"
+    python3 run.py

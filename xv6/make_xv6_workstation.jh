@@ -1,0 +1,30 @@
+#주석처리 (지원 : 24.02.04)
+install:
+    build-essential
+    apt-get install -y build-essential gdb gcc-multilib
+    git-core
+    qemu-kvm
+
+chdir:
+    ~
+run:
+    rm -rf xv6
+    mkdir xv6
+
+chdir:
+    ~/xv6
+
+run:
+    # xv6 OS Download
+    git init
+    git remote add xv6 https://github.com/mit-pdos/xv6-public.git
+    git pull xv6
+    git checkout xv6/master
+
+    # 실행 
+    make
+    make qemu-nox
+
+reChdir:
+    init
+    
