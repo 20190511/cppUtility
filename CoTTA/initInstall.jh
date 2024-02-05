@@ -11,9 +11,15 @@ chdir:
     ~
 run:
     # 아나콘다 설치여부 및 설치
-    wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh [filecheck] ~/anaconda
     mkdir anaconda [filecheck] ~/anaconda
-    anaconda/Anaconda3-2023.09-0-Linux-x86_64.sh [filecheck] ~/anaconda3 
+
+chdir:
+    ~/anaconda
+
+run:
+    wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh [filecheck] ~/anaconda
+    ./Anaconda3-2023.09-0-Linux-x86_64.sh [filecheck] ./anaconda3 
+
 reChdir:
     init
 
