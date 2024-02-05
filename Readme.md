@@ -2,10 +2,10 @@
 --- 
 
 ### in Source
-1. ospath.h         # C/C++ SystemCall을 적당히 섞어 만든 python os와 유사한 역할을 하는 패키지 헤더파일 제작
-2. stringExpand.h   # C++ string 클래스 추가구현 (split Customizing) 등등
-3. scriptReader.cpp # .jh 스크립트를 자동으로 실행
-4. run.py           # .pyjh 스크립트를 자동으로 실행
+1. [ospath.h](https://github.com/20190511/cppUtility/blob/main/ospath.h)         # C/C++ SystemCall을 적당히 섞어 만든 python os와 유사한 역할을 하는 패키지 헤더파일 제작
+2. [stringExpand.h](https://github.com/20190511/cppUtility/blob/main/stringExpand.h)   # C++ string 클래스 추가구현 (split Customizing) 등등
+3. [scriptReader.cpp](https://github.com/20190511/cppUtility/blob/main/scriptReader.cpp) # .jh 스크립트를 자동으로 실행
+4. [run.py](https://github.com/20190511/cppUtility/blob/main/run.py)           # .pyjh 스크립트를 자동으로 실행
 
 
 ### 사용법
@@ -22,3 +22,6 @@ tar -xvzf script.tar.gz
 make
 ```
 
+
+### SCript .jh 문법
+1. 추가예정.. (run: install: chdir: reChdir: [filecheck])
