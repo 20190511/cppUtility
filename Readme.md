@@ -43,3 +43,7 @@ source ~/.bashrc
 >> (중간에 뻑나면.. cd ~ 한 후 rm -rf anaconda3 를 한 후 cd script 후 다시 make를 하자...
 ![image](https://github.com/20190511/cppUtility/assets/70988272/abd98a27-867c-4cc4-b9f0-d3e5afdac4b9)
 ![image](https://github.com/20190511/cppUtility/assets/70988272/30e24a6c-bcca-4a5b-bdd3-21bb770747ec)
+
+
+### .jh파일 문법 (차후 추가)
+![image](https://github.com/20190511/cppUtility/assets/70988272/f4469288-f99b-4c5d-a1ba-cc847e43fdad)
