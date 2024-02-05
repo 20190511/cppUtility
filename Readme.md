@@ -33,9 +33,12 @@ make
 
 2.
   설치 도중 오류가 난다면 침착하게 다시 make를 하면된다.
+
+3. 즁건에 튕긴다면 아래의 명령어를 실행하라 (.bashrc 가 제대로 적용되지 않는 오류가 한 번씩 보임 (아나콘다 설치 직후))
+source ~/.bashrc
 ```
 
-### anaconda 설치 환경
+### anaconda 설치 환경 (주의)
 >> <엔터키> - <f키> - <f키> -  yes - <엔터키> - yes  순서로 눌러주면 된다.
 >> (중간에 뻑나면.. cd ~ 한 후 rm -rf anaconda3 를 한 후 cd script 후 다시 make를 하자...
 ![image](https://github.com/20190511/cppUtility/assets/70988272/abd98a27-867c-4cc4-b9f0-d3e5afdac4b9)
