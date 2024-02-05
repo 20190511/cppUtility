@@ -22,3 +22,10 @@ tar -xvzf script.tar.gz
 make
 ```
 
+### 주의할 점
+```
+  CoTTA 설치 중 Anaconda 설치 중 lisnse 를 accept 하려는 부분까지 읽기 위해서 계속 enter를 치다가
+  설치가 제대로 되지 않을 수 있다.
+
+  --> Enter 대신 f 키를 연타하면 <no|yes> 가 뜰 텐데 이때 yes를 누르면 된다.
+```
