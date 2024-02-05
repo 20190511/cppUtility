@@ -66,8 +66,11 @@ class PythonScriptor:
             print(" ===== select your runscriptor ===== ")
             for i, e in enumerate(self.scriptList):
                 print(f"[{i}]  {e}")
+            try:
+                fidx = int(input("junhyeong >> "))
+            except ValueError:
+                fidx = 0
 
-            fidx = int(input("junhyeong >> "))
             if fidx < 0 or fidx >= len(self.scriptList):
                 continue
             else:
