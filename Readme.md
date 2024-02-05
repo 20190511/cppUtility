@@ -26,6 +26,10 @@ tar -xvzf script.tar.gz
 make
 ```
 
+### 사용법 II
+```powersheall
+```
+
 
 ### SCript .jh 문법
 1. 추가예정.. (run: install: chdir: reChdir: [filecheck])
