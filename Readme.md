@@ -1,4 +1,5 @@
 ## Linux 전용 Shell Scriptor :: (2024.02.03 ~ 2024.02.05) - Junhyeong(0511)
+### (2024.02.06 ~) - IPC(프로세스간 통신) FIFO vs MessageQueue 연구 중...
 --- 
 
 ### in Source
