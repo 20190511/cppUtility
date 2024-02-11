@@ -1,13 +1,15 @@
 ## Linux 전용 Shell Scriptor :: (2024.02.03 ~ 2024.02.05) - Junhyeong(0511)
 ### (2024.02.06 ~) - IPC(프로세스간 통신) FIFO vs MessageQueue 연구 중... <-- source ~/.bashrc 미해결
 ### (2024.02.11 ~ 2024.02.12) : xv6 Assemble 프로그램 제작
-- [xv6 프로젝트](https://github.com/20190511/OS_xv6/tree/main)
-- ![초반 Install](https://github.com/20190511/cppUtility/assets/70988272/521be2cc-5f8b-49de-9db7-205af5acbcbc)
-- ![image](https://github.com/20190511/cppUtility/assets/70988272/1c984741-f362-4183-92d1-9cd4fdabe279)
-- ![파일 입력받기](https://github.com/20190511/cppUtility/assets/70988272/f88bdc2c-5dd6-4ece-bb1b-f3a232c0758f)
+- Asemble 과제 파일 다운로드
+[xv6 프로젝트](https://github.com/20190511/OS_xv6/tree/main)
+- 소스코드 합친 후 debug 입력받기 (없을 시 엔터)
+ ![image](https://github.com/20190511/cppUtility/assets/70988272/1c984741-f362-4183-92d1-9cd4fdabe279)
+- debug 입력받은 후의 xv6 실행 모습
+ ![파일 입력받기](https://github.com/20190511/cppUtility/assets/70988272/f88bdc2c-5dd6-4ece-bb1b-f3a232c0758f)
 - ![image](https://github.com/20190511/cppUtility/assets/70988272/5987e8f6-f1ca-4065-b3ef-518a0f836efe)
-- ![debug 옵션 부여 시](https://github.com/20190511/cppUtility/assets/70988272/f4bfc534-5c48-4608-a0d2-b11e92ab09fe)
-- ![Ctrl-A + X 입력 후 종료 시 tmp파일 삭제](https://github.com/20190511/cppUtility/assets/70988272/88ba8420-447c-4a90-894c-cbb868f7fd6f)
+- Ctrl-A 와 x 입력 후 xv6 종료시 tmp 파일 정리
+![Ctrl-A + X 입력 후 종료 시 tmp파일 삭제](https://github.com/20190511/cppUtility/assets/70988272/88ba8420-447c-4a90-894c-cbb868f7fd6f)
 
 --- 
 
