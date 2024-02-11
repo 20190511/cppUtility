@@ -252,7 +252,10 @@ string path::join(deque<string> d)
 
 string path::fullPath(string s) {
     if (s.at(0) == '~') {
-        s = getenv("HOME") + s.substr(1, s.length()-1);
+        if (s == "~")
+            s = getenv("HOME");
+        else
+            s = getenv("HOME") + s.substr(1, s.length()-1);
     }
     else if (s.at(0) != pathToken[0]) {
        s = string(getcwd(NULL, 0)) + pathToken + s;

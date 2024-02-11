@@ -13,4 +13,4 @@ PREVINSTALL:
 	sudo apt-get install gcc
 	sudo apt-get install gdb
 clean:
-	rm -rf $(PROGRAM)
+	rm -rf $(PROGRAM) xv6_assemble
