@@ -4,10 +4,10 @@
 - Asemble 과제 파일 다운로드
 [xv6 프로젝트](https://github.com/20190511/OS_xv6/tree/main)
 - 소스코드 합친 후 debug 입력받기 (없을 시 엔터)
- ![image](https://github.com/20190511/cppUtility/assets/70988272/1c984741-f362-4183-92d1-9cd4fdabe279)
+ ![image](https://github.com/20190511/cppUtility/assets/70988272/58f75849-3e9a-464b-8035-ed7e27a23540)
 - debug 입력받은 후의 xv6 실행 모습
- ![파일 입력받기](https://github.com/20190511/cppUtility/assets/70988272/f88bdc2c-5dd6-4ece-bb1b-f3a232c0758f)
-- ![image](https://github.com/20190511/cppUtility/assets/70988272/5987e8f6-f1ca-4065-b3ef-518a0f836efe)
+![파일 입력받기](https://github.com/20190511/cppUtility/assets/70988272/f88bdc2c-5dd6-4ece-bb1b-f3a232c0758f)
+![image](https://github.com/20190511/cppUtility/assets/70988272/5987e8f6-f1ca-4065-b3ef-518a0f836efe)
 - Ctrl-A 와 x 입력 후 xv6 종료시 tmp 파일 정리
 ![Ctrl-A + X 입력 후 종료 시 tmp파일 삭제](https://github.com/20190511/cppUtility/assets/70988272/88ba8420-447c-4a90-894c-cbb868f7fd6f)
 
