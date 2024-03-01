@@ -14,6 +14,7 @@
 using namespace std;
 
 #define PROMPT          cout<<"junhyeong >> "
+#define QEMUOPT         "make qemu"
 #define SOURCE_CODE_DIR "소스코드" 
 #define ASSIGN_DIR      "~/Assign"
 #define XV6_CLONEDIR    "xv6_clone"
@@ -98,9 +99,9 @@ int         qemu_5()
         getline(cin, debug_opt);
 
         if (!debug_opt.compare(""))
-            system("make qemu-nox");
+            system(QEMUOPT);
         else
-            system(string("make qemu-nox " + strip(debug_opt)).c_str());
+            system(string(QEMUOPT + string(" ") + strip(debug_opt)).c_str());
         return true;
     }
     return true;

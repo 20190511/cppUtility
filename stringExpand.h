@@ -4,6 +4,14 @@
 #include <cstring>
 #include <deque>
 
+std::string replace(std::string s1 , std::string s2, std::string chStr) {
+    if (!strstr(s1.c_str(), s2.c_str()))
+        return s1+s2;
+    size_t s = s1.find(s2), e = s2.length();
+    s1.replace(s,e, chStr);
+    return s1;
+}
+
 std::deque<std::string> split(std::string str, const char* tok, size_t sz = 0)
 { 
     char line[1024] = {0,}, *curPtr = line;
