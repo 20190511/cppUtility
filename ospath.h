@@ -25,6 +25,7 @@ private:
 
 public:
     path (string s = getcwd(NULL, 0));
+    path ();
     string getCurPath();            // 현재경로
     string fullPath(string s);      // s를 full 경로로 변경
     string join(deque<string> d);   //deque 값으로 path 경로 합치기
@@ -261,7 +262,6 @@ string path::fullPath(string s) {
        s = string(getcwd(NULL, 0)) + pathToken + s;
     }  
 
-    cout<<s<<endl;
     deque<string> dq = split(s, pathToken), dd;
     while(!dq.empty()) {
         if (!dq.front().compare(".."))  {
@@ -332,6 +332,10 @@ path::path(string s) {
     }
     struct stat st;
     path::curPath = s;
+}
+
+path::path() {
+    path::curPath = getcwd(NULL, 0);
 }
 
 

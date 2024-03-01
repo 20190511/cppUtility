@@ -8,9 +8,15 @@ START: $(PROGRAM)
 $(PROGRAM):PREVINSTALL ospath.h stringExpand.h
 	$(CC) -o $(PROGRAM) $(PROGRAM).cpp
 
+xv6: xv6_assemble
+	$(CC) -o $< $<.cpp
+
 PREVINSTALL:
 	sudo apt-get install g++
 	sudo apt-get install gcc
 	sudo apt-get install gdb
-clean:
-	rm -rf $(PROGRAM) xv6_assemble
+
+clean: fileEraser
+	$(CC) -o $< $<.cpp
+	./fileEraser
+	
