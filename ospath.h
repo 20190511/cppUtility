@@ -34,14 +34,28 @@ public:
     bool isExecute(string s);   // 파일 실행 가능 여부 확인
     bool isFile(string s);      // 파일 존재 여부 확인
     bool isDir(string s);       // 파일이 디렉토리 인지 확인 
+    bool isRegular(string s);   // 파일이 일반파일인지 확인
     bool mkdirs(string s);      // 복수 디렉토리 생성
     bool fileCopy (string a, string b); //파일 복사
     bool dirCopy (string a, string b); //디렉토리 복사
     bool fileDelete (string a);     //파일&디렉토리 삭제
 
+    int  fileSize (string a);
     deque<string> readDir(string s, bool all);
 }; 
 
+int  path::fileSize (string a = "") 
+{
+    if (!a.length())
+        a = curPath;
+    
+    struct stat st;
+    if (stat(a.c_str(), &st) < 0) {
+        fprintf(stderr, "stat error for %s\n", a.c_str());
+        return -1;
+    }
+    return (int)st.st_size;
+}
 bool path::fileDelete (string a = "") 
 {
     if (!a.length())
@@ -221,10 +235,11 @@ deque<string> path::readDir(string s = "", bool all = true)
 
         while ((dnt = readdir(dir)) != NULL) {
             if (strcmp(dnt->d_name, ".") && strcmp(dnt->d_name, "..")) {
-                if (isDir(dnt->d_name) && all) {
-                    dirQueue.push_back(join({curDirPath, string(dnt->d_name)}));
+                string dntPath = join({curDirPath, string(dnt->d_name)});
+                if (isDir(dntPath) && all) {
+                    dirQueue.push_back(dntPath);
                 }
-                pq.push_back(join({curDirPath, string(dnt->d_name)}));
+                pq.push_back(dntPath);
                 //cout<<join({curDirPath, string(dnt->d_name)})<<endl;
             }
         }
@@ -289,6 +304,21 @@ string path::fullPath(string s) {
 
 bool path::isFile(string s) {
     return !access(s.c_str(), F_OK);
+}
+
+bool path::isRegular(string s) {
+    if(!isFile(s)) {
+        return false;
+    }
+
+    struct stat sb;
+    if (stat(s.c_str(), &sb) < 0) {
+        fprintf(stderr, "%s cannot be accessed statbuf\n", s.c_str());
+        return false;
+    }
+
+    return S_ISREG(sb.st_mode);
+
 }
 bool path::isExecute(string s) {
     if(!isFile(s)) {
