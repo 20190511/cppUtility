@@ -1,29 +1,43 @@
+#ifndef  BACKUP_HPP
+#define  BACKUP_HPP
 #include <deque>
 #include <iostream>
 #include <string>
+/** Cpp Utility Header (junhyeong) **/
 #include "ospath.h"
 #include "stringExpand.h"
 
-/** system Heaeder */
-#include <time.h>
-#include <sys/time.h>
 
-/** openssh Header */
-// File 내용 Hasing 비교
+// File 내용 Hasing 비교 
 #ifndef OPENSSL_API_COMPAT
+//Hash Deprecated Alarm 끄기를 위한 Version 설정
 #define OPENSSL_API_COMPAT      0x10101000L
 #endif
+/** openssh Header */
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 
-/** open file control*/
+/** open file control System Header*/
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+
+/** For Time system Heaeder **/
+#include <time.h>
+#include <sys/time.h>
+
 using namespace std;
+
+#ifndef DEBUG
+#define DEBUG       true
+#endif
 
 #ifndef BUFSIZE
 #define BUFSIZE     1024
+#endif
+
+#ifndef PROMPT  
+#define PROMPT      cout<<"junhyeong> "
 #endif
 
 
@@ -31,52 +45,259 @@ deque<string> searchDir(string p);
 void hyperSetup();
 
 /** originPath <--> backup **/
-string oriToBackup(string s);
-string backupToOri(string s);
-deque<string> oriToBackup(deque<string> dq);
-deque<string> backupToOri(deque<string> dq);
+string oriToBackup(string s); //originFile -> backup (with Time Tag)
+string backupToOri(string s); //backupFile -> backup (with Time Tag)
+deque<string> oriToBackup(deque<string> dq); // originFile -> backup Queue (with Time Tag)
+deque<string> backupToOri(deque<string> dq); // bkacup -> originFile Queue (with Time Tag)
 
-string oriToBackupOnly(string s);
+//No Time Tag Transformation 
+string oriToBackupOnly(string s); 
 string backupToOriOnly(string s);
 
+//Attatch-Detach Time Tag Function
 string attachTimeTag(string name);
 string detachTimeTag(string name);
 
 /** checksum **/
-string  fileToHashMD5(string fname);
-string  fileToHashSHA(string fname);
+string  fileToHashMD5(string fname); //hash_mode == 0
+string  fileToHashSHA(string fname); //hash_mode == 1
 
 /** A. Backup **/
-bool backup(string fname);
+bool backup(string fname); //backup Module : dir&Reg File All Supported
 
+/** B. Recover **/
+bool recover (string fname, string newName);
+bool recoverFile (string fname, string newName, bool printUsageFlag); //Each File Recover Function
+
+/** C. Remove **/
+bool b_remove (string fname, bool allClear);
 
 /** X. FileCopy **/
 bool fileCopy(string from, string to);
 bool mkdirs(string dirs);
 bool hashCheck(string originPath);
 deque<string> backupList(string originPath);
+deque<deque<string>> backupClassify(string originPath);
+
+/** XI. USAGE **/
+void printUsage();
+
+/** Total Interface **/
+void getoptProcess();
 
 
-/**backupDir name*/
-string  backupDir;
-string  curPath;
-int     hash_mode = 0;
+/** All Function Used Static Variable **/
+string  backupDir;      // BackupPath : Cur, /home/<UserName>/backup
+string  curPath;        // curDirectory Path : getcwd(NULL, 0);
+path pModule(".");      // Only Used Path Utility
+int     hash_mode = 0;  // Choose Hash_mode (0 : md5 , 1: SHA)
+void (*help)() = printUsage;
 
+#if DEBUG
 int main(int argc, char* argv[])
 {
     hyperSetup();
+    b_remove("/home/junhyeong/success", false);
+    //backup("/home/junhyeong/success");
+    //recover("/home/junhyeong/success", "") ;
 
-
-    /*
-    deque<string> dq = searchDir(".");
-    deque<string> newDq = oriToBackup(dq);
-
-    for (int i = 0 ; i < (int)newDq.size() ; i++)
-        cout<<newDq.at(i)<<endl;
-    */
-    
-    backup("/home/junhyeong/ScriptReader/ospath.h") ;
     exit(0);
+}
+#endif
+
+void printUsage()
+{
+    cout<< "Usage:"<<endl;
+    cout<< "  > backup [FILENAME]"<<endl;
+    cout<< "  > remove [FILENAME] [OPTION]"<<endl;
+    cout<< "\t-c : clear backup directory"<<endl;
+    cout<< "  > recover [FILENAME] [OPTION]"<<endl;
+    cout<< "\t-n [NEWNAME] : recover file with new name"<<endl;
+    cout<< "  > ls"<<endl;
+    cout<< "  > vi"<<endl;
+    cout<< "  > vim"<<endl;
+    cout<< "  > help"<<endl;
+    cout<< "  > exit"<<endl;
+}
+
+
+bool b_remove (string fname, bool allClear = false) 
+{
+    bool dirFlag = pModule.isDir(oriToBackupOnly(fname)) ? true : false;
+    deque<deque<string>> dq = allClear ? backupClassify(string(getenv("HOME"))) : backupClassify(fname);
+
+    int regCnt = 0, dirCnt = 0;
+    while(!dq.empty()) {
+        deque<string> in_dq = dq.back();
+        dq.pop_back();
+
+        if (dirFlag || allClear) {
+            while(!in_dq.empty()) {
+                string delFile = in_dq.back();
+                in_dq.pop_back();
+                // File Existence 검사
+                if (access(delFile.c_str(), F_OK) < 0)
+                    continue;
+                // 파일 일괄삭제 인터페이스
+                cout<<"\""<<delFile<<"\" backup file removed"<<endl;
+                if (pModule.isDir(delFile)) {
+                    dirCnt++;
+                    rmdir(delFile.c_str());
+                }
+                else {
+                    regCnt++;
+                    unlink(delFile.c_str());
+                }
+            }
+            continue;
+        }
+
+        int idx = -2;
+        deque<string> bckQ = backupList(backupToOri(in_dq.front()));
+        if (bckQ.empty()) {
+            fprintf(stderr, "backup file %s is not existed\n", fname.c_str());
+            continue;
+        }
+        else if ((int)bckQ.size() == 1)  {
+            unlink(bckQ.front().c_str());
+            continue;
+        }
+        cout<<"backup file list of \""<<fname<<"\""<<endl;
+        cout<<"Choose file to remove"<<endl;
+        cout<<"0. exit"<<endl;
+        for (int i = 0; i < (int)bckQ.size(); i++) {
+            string bckName = bckQ.at(i), tag = bckName.substr(bckName.length() - 13);
+            cout << i + 1 << ". " << tag << "\t" << pModule.fileSize(bckName) << "Bytes" << endl;
+        }
+        while (idx < -1 || idx >= (int)bckQ.size()) {
+            PROMPT;
+            cin>>idx;
+            --idx;
+        }
+        if (idx < 0)
+            continue;
+        string delFile = bckQ.at(idx);
+        cout<<"\""<<delFile<<"\" backup file removed"<<endl;
+        unlink(delFile.c_str());
+    }
+
+    if (dirFlag) 
+        rmdir(oriToBackup(fname).c_str());
+    if (allClear) {
+        if (!regCnt && !dirCnt) 
+            cout<<"no file(s) in the backup"<<endl;
+        else
+            fprintf(stdout, "backup directory cleared (%d regular files and %d subdirectories totlally).", 
+                regCnt, dirCnt);
+    }
+    return true;
+}
+
+deque<deque<string>> backupClassify(string originPath)
+{
+    deque<string> originQ = pModule.readDir(oriToBackupOnly(originPath));
+    deque<deque<string>> backupQ;
+    if (originQ.empty()) {
+        backupQ.push_back(deque<string>({oriToBackup(originPath)}));
+        return backupQ;
+    }
+
+    while(!originQ.empty()) {
+        string s = originQ.front();
+        originQ.pop_front();
+        if (pModule.isDir(s)) {
+            backupQ.push_back(deque<string>({s}));
+            continue;
+        }
+        string detachName = detachTimeTag(s);
+        int passFlag = false;
+        for (int i = 0 ; i < (int)backupQ.size() ; i++) {
+            if (!detachTimeTag(backupQ.at(i).front()).compare(detachName)) {
+                backupQ.at(i).push_back(s);
+                passFlag = true;
+                break;
+            }
+        }
+
+        if (passFlag)
+            continue;
+        backupQ.push_back(deque<string>({s}));
+    }
+    return backupQ;
+}
+bool recover (string fname, string newName = "") 
+{
+    if (newName == "")
+        newName = fname;
+
+    deque<deque<string>> dq = backupClassify(fname);
+    bool dirFlag = pModule.isDir(oriToBackupOnly(fname)) ? true : false;
+
+    for (int i = 0 ; i < (int)dq.size() ; i++) {
+        string curObj = dq.at(i).front(), curFile = pModule.isDir(curObj) ? backupToOriOnly(curObj) : backupToOri(curObj), 
+            newBckName = dirFlag ? pModule.join({newName, curFile.substr(fname.length()+1)}) : newName;
+        if (pModule.isDir(curObj)) {
+            if (!mkdirs(newBckName)) {
+                fprintf(stderr, "[recover] mkdirs error for %s\n", newBckName.c_str());
+                continue;
+            }
+            continue;
+        }
+        recoverFile(curFile, newBckName, !dirFlag);    
+    }
+    return true;
+}
+
+bool recoverFile (string fname, string newName="", bool printUsageFlag = true)
+{
+    if (newName == "")    
+        newName = fname;
+    
+    deque<string> bckQ = backupList(fname);
+    string chooseBckName = "";
+    
+    // File 선택
+    if (!(int)bckQ.size()) {
+        if (printUsageFlag) printUsage();
+        return false;
+    }
+    else if ((int)bckQ.size() == 1) {
+        chooseBckName = bckQ.front();
+    }
+    else {
+        int idx = -1;
+        cout<<"backup file list of \""<<fname<<"\""<<endl;
+        for (int i = 0; i < (int)bckQ.size(); i++) {
+            string bckName = bckQ.at(i), tag = bckName.substr(bckName.length() - 13);
+            cout << i + 1 << ". " << tag << "\t" << pModule.fileSize(bckName) << "Bytes" << endl;
+        }
+
+        cout<<"Choose file to recover"<<endl;
+        while (idx < 0 || idx >= (int)bckQ.size()) {
+            PROMPT;
+            cin>>idx;
+            --idx;
+        }
+        chooseBckName = bckQ.at(idx);
+    }
+
+    // 해시 비교 (file 존재시)
+    if (pModule.isRegular(newName)) {
+        string originHash = hash_mode == 0 ? fileToHashMD5(newName) : fileToHashSHA(newName);
+        string backupHash = hash_mode == 0 ? fileToHashMD5(chooseBckName) : fileToHashSHA(chooseBckName);
+        if (!originHash.compare(backupHash)) {
+            fprintf(stderr, "%s is same file as %s\n", newName.c_str(), chooseBckName.c_str());
+            return false;
+        }
+    }
+
+    // 파일 백업 
+    if (!fileCopy(chooseBckName, newName)) {
+        fprintf(stderr, "[recover] Recovor error for %s\n", newName.c_str());
+        return false; 
+    }
+    
+    return true;
 }
 
 bool fileCopy(string from, string to)
@@ -89,12 +310,12 @@ bool fileCopy(string from, string to)
     int fd1, fd2, length;
     char buf[BUFSIZE];
     if ((fd1 = open(from.c_str(), O_RDONLY)) < 0) {
-        fprintf (stderr, "fopen error for %s\n", from.c_str());
+        fprintf (stderr, "fopen error for %s (read)\n", from.c_str());
         return false;
     }
 
     if ((fd2 = open(to.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644)) < 0) {
-        fprintf (stderr, "fopen error for %s\n", to.c_str());
+        fprintf (stderr, "fopen error for %s (write)\n", to.c_str());
         return false;
     }
     
@@ -114,13 +335,12 @@ bool fileCopy(string from, string to)
 
 bool backup(string fname)
 {
-    path p(".");
     deque<string> dq = searchDir(fname);
-    if (!p.isFile(fname)) {
+    if (!pModule.isFile(fname)) {
         fprintf(stderr, "%s cannot be accessed\n", fname.c_str());
         return false;
     }
-    if (!p.isDir(fname)) 
+    if (!pModule.isDir(fname)) 
         dq.push_back(fname);
 
     deque<string> backupQ;
@@ -128,16 +348,19 @@ bool backup(string fname)
     for (int i = 0 ; i < (int)dq.size() ; i++) {
         string originPath = dq.at(i);
         string backupPath = oriToBackupOnly(originPath);
-        if (backupMotherPath.compare(p.motherDir(backupPath))) {
-            backupMotherPath = p.motherDir(backupMotherPath);
+
+        if (backupMotherPath.compare(pModule.motherDir(backupPath))) {
+            backupMotherPath = pModule.motherDir(backupMotherPath);
             backupQ.clear();
-            backupQ = p.readDir(backupMotherPath, false);
+            backupQ = pModule.readDir(backupMotherPath, false);
         }
         
         //backup 
-        if (p.isDir(originPath) && !p.isDir(backupPath)) {
-            if (p.isFile(backupPath)) 
-                unlink(backupPath.c_str());
+        if (pModule.isDir(originPath)) {
+            if (!pModule.isDir(backupPath)) {
+                if (pModule.isFile(backupPath)) 
+                    unlink(backupPath.c_str());
+            }
             mkdirs(backupPath);
             continue;
         }
@@ -178,8 +401,7 @@ bool hashCheck(string originPath)
 deque<string> backupList(string originPath)
 {
     string backupPath = oriToBackupOnly(originPath);
-    path p(".");
-    deque<string> bq = p.readDir(p.motherDir(backupPath), false), retQ;
+    deque<string> bq = pModule.readDir(pModule.motherDir(backupPath), false), retQ;
 
     while(!bq.empty()) {
         string s = bq.front();
@@ -193,18 +415,17 @@ deque<string> backupList(string originPath)
 
 bool mkdirs(string dirs)
 {
-    path p(".");
-    string dirList = p.motherDir(dirs), mother = "";
+    string dirList = pModule.motherDir(dirs), mother = "";
     deque<string> dirQ = split(dirList, "/"); 
 
     while(!dirQ.empty()) {
         mother += string("/") + dirQ.front();
         dirQ.pop_front();
 
-        if (p.isDir(mother)) {
+        if (pModule.isDir(mother)) {
             continue;
         }
-        else if (p.isFile(mother))
+        else if (pModule.isFile(mother))
             unlink(mother.c_str());
         
         if (mkdir(mother.c_str(), 0755) < 0) {
@@ -336,3 +557,4 @@ deque<string> searchDir(string p)
 
     return myPath.readDir();
 }
+#endif
