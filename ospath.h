@@ -41,7 +41,7 @@ public:
     bool fileDelete (string a);     //파일&디렉토리 삭제
 
     int  fileSize (string a);
-    deque<string> readDir(string s, bool all);
+    deque<string> readDir(string s, bool all, bool printOpt);
 }; 
 
 int  path::fileSize (string a = "") 
@@ -71,7 +71,7 @@ bool path::fileDelete (string a = "")
         return false;
     }
 
-    deque<string> dirQ =  readDir(a, true);
+    deque<string> dirQ =  readDir(a, true, true);
     while (!dirQ.empty())
     {
         if (isDir(dirQ.back()))  {
@@ -139,7 +139,7 @@ bool path::dirCopy (string a="", string b="../backup") {
         mkdir(b.c_str(), 0777);
     }
 
-    deque<string> fq = readDir(a, true);
+    deque<string> fq = readDir(a, true, true);
     while(!fq.empty()) {
         string curFullS = fq.front();
         string curS = string(curFullS).replace(0, a.length(), "");
@@ -214,12 +214,12 @@ bool path::fileCopy (string a="", string b="../backup") {
 }
 
 
-deque<string> path::readDir(string s = "", bool all = true)
+deque<string> path::readDir(string s = "", bool all = true, bool printOpt = true)
 {
     if (!s.length())
         s = curPath;
     deque<string> pq, dirQueue({s});
-    if (!isDir(curPath))
+    if (!isDir(s))
         return pq;
 
     while (!dirQueue.empty()) {
@@ -228,7 +228,7 @@ deque<string> path::readDir(string s = "", bool all = true)
 
         DIR *dir = opendir(curDirPath.c_str());
         struct dirent *dnt;
-        if (dir == NULL) {
+        if (dir == NULL && printOpt) {
             fprintf(stderr, "readdir error %s\n", curDirPath.c_str());
             break;
         }

@@ -139,13 +139,14 @@ bool b_remove (string fname, bool allClear = false)
                 if (access(delFile.c_str(), F_OK) < 0)
                     continue;
                 // 파일 일괄삭제 인터페이스
-                cout<<"\""<<delFile<<"\" backup file removed"<<endl;
                 if (pModule.isDir(delFile)) {
                     dirCnt++;
+                    cout<<"\""<<delFile<<"\" backup directory removed"<<endl;
                     rmdir(delFile.c_str());
                 }
                 else {
                     regCnt++;
+                    cout<<"\""<<delFile<<"\" backup file removed"<<endl;
                     unlink(delFile.c_str());
                 }
             }
@@ -159,6 +160,7 @@ bool b_remove (string fname, bool allClear = false)
             continue;
         }
         else if ((int)bckQ.size() == 1)  {
+            cout<<"\""<<bckQ.front()<<"\" backup file removed"<<endl;
             unlink(bckQ.front().c_str());
             continue;
         }
@@ -181,13 +183,15 @@ bool b_remove (string fname, bool allClear = false)
         unlink(delFile.c_str());
     }
 
-    if (dirFlag) 
-        rmdir(oriToBackup(fname).c_str());
+    if (dirFlag) {
+        cout<<"\""<<oriToBackupOnly(fname)<<"\" backup directory removed"<<endl;
+        rmdir(oriToBackupOnly(fname).c_str());
+    }
     if (allClear) {
         if (!regCnt && !dirCnt) 
             cout<<"no file(s) in the backup"<<endl;
         else
-            fprintf(stdout, "backup directory cleared (%d regular files and %d subdirectories totlally).", 
+            fprintf(stdout, "backup directory cleared (%d regular files and %d subdirectories totlally).\n", 
                 regCnt, dirCnt);
     }
     return true;
@@ -195,7 +199,7 @@ bool b_remove (string fname, bool allClear = false)
 
 deque<deque<string>> backupClassify(string originPath)
 {
-    deque<string> originQ = pModule.readDir(oriToBackupOnly(originPath));
+    deque<string> originQ = pModule.readDir(oriToBackupOnly(originPath), true, false);
     deque<deque<string>> backupQ;
     if (originQ.empty()) {
         backupQ.push_back(deque<string>({oriToBackup(originPath)}));
@@ -362,6 +366,7 @@ bool backup(string fname)
                     unlink(backupPath.c_str());
             }
             mkdirs(backupPath);
+            mkdir(backupPath.c_str(), 0755);
             continue;
         }
 
@@ -401,7 +406,7 @@ bool hashCheck(string originPath)
 deque<string> backupList(string originPath)
 {
     string backupPath = oriToBackupOnly(originPath);
-    deque<string> bq = pModule.readDir(pModule.motherDir(backupPath), false), retQ;
+    deque<string> bq = pModule.readDir(pModule.motherDir(backupPath), false, false), retQ;
 
     while(!bq.empty()) {
         string s = bq.front();
@@ -417,7 +422,6 @@ bool mkdirs(string dirs)
 {
     string dirList = pModule.motherDir(dirs), mother = "";
     deque<string> dirQ = split(dirList, "/"); 
-
     while(!dirQ.empty()) {
         mother += string("/") + dirQ.front();
         dirQ.pop_front();
@@ -427,7 +431,7 @@ bool mkdirs(string dirs)
         }
         else if (pModule.isFile(mother))
             unlink(mother.c_str());
-        
+
         if (mkdir(mother.c_str(), 0755) < 0) {
             fprintf(stderr, "%s can not be created Directory\n", mother.c_str());
             return false;
