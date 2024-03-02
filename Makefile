@@ -10,6 +10,11 @@ $(PROGRAM):PREVINSTALL ospath.h stringExpand.h
 
 xv6: xv6_assemble
 	$(CC) -o $< $<.cpp
+	./$<
+
+backup: backup
+	$(CC) -o $@ $@.cpp -lcrypto
+	./$@
 
 PREVINSTALL:
 	sudo apt-get install g++

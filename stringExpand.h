@@ -6,7 +6,7 @@
 
 std::string replace(std::string s1 , std::string s2, std::string chStr) {
     if (!strstr(s1.c_str(), s2.c_str()))
-        return s1+s2;
+        return s1;
     size_t s = s1.find(s2), e = s2.length();
     s1.replace(s,e, chStr);
     return s1;
