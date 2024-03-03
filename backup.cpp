@@ -15,6 +15,7 @@ using namespace std;
 #define HELP_FLAG           0b10000
 #define EXIT_FLAG           0b100000
 #define VIM_FLAG            0b11000000
+#define COMPARE_FLAG        0b100000000
 
 #define RECOVER_NEW         0x80000000
 #define REMOVE_CLEAR        0x40000000
@@ -38,19 +39,18 @@ char** optVector = NULL;
 path pathModule(".");
 
 const string cmdList[] = {
-    "backup", "remove", "recover", "ls", "help", "exit", "vi", "vim"
+    "backup", "remove", "recover", "ls", "help", "exit", "vi", "vim", "compare"
 };
 void optFunc();
 void optClear();
 bool optProcess();
-
 void backupSystem();
 
 #define DEBUGS  false
 #if DEBUGS
 int main(void) {
     hyperSetup();
-    recover("/home/junhyeong/ScriptReader/backup.cpp", "");
+    b_compare("/home/junhyeong/ScriptReader/backup.cpp");
 }
 #else
 int main(int argc, char** argv)
@@ -94,6 +94,12 @@ void backupSystem() {
         if (optFlag & RECOVER_NEW)
             newPath = pathModule.fullPath(subOption);
         recover(targetPath, newPath);
+    } 
+    else if (optFlag & COMPARE_FLAG) {
+        string targetFile = "";
+        if (optCnt == 3)
+            targetFile = pathModule.fullPath(optVector[2]);
+        b_compare(targetPath, targetFile);
     }
 }
 bool optProcess()
@@ -111,7 +117,7 @@ bool optProcess()
     }
 
 
-    if (optFlag & (BACKUP_FLAG | REMOVE_FLAG | RECOVER_FLAG)) {
+    if (optFlag & (BACKUP_FLAG | REMOVE_FLAG | RECOVER_FLAG | COMPARE_FLAG)) {
         backupSystem();
     }
     else if (optFlag & LS_FLAG) {
@@ -126,7 +132,6 @@ bool optProcess()
     else if (!(optFlag & EXIT_FLAG)) {
         help();
     }
-
     if (pid == 0)
         exit(0);
     return true;
@@ -161,6 +166,7 @@ void optFunc()
             optFlag |= 1<<i;
 
     // 추가 Option 처리
+    // 추가 내용 처리
     optVector = new char*[(int)lineVec.size()+1]; //optCnt, optVector 설정
     bool noOpt = true;
     while (!lineVec.empty()) {

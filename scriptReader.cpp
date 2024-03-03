@@ -183,7 +183,7 @@ void system(string s)
 }
 
 void transformer() {
-    path p;
+    path p(".");
     deque<string> fileQ = p.readDir(), scriptQ;
     while(!fileQ.empty()) {
         string f = fileQ.front();
