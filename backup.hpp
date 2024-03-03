@@ -6,6 +6,7 @@
 /** Cpp Utility Header (junhyeong) **/
 #include "ospath.h"
 #include "stringExpand.h"
+#include "lcs.hpp" // 파일 변경점 LCS 출력
 
 
 // File 내용 Hasing 비교 
@@ -72,6 +73,10 @@ bool recoverFile (string fname, string newName, bool printUsageFlag); //Each Fil
 /** C. Remove **/
 bool b_remove (string fname, bool allClear);
 
+/** D. Compare **/
+bool b_compare (string fname, string targetFile); //file Compare Module With LCS Algorithm
+
+
 /** X. FileCopy **/
 bool fileCopy(string from, string to);
 bool mkdirs(string dirs);
@@ -113,11 +118,62 @@ void printUsage()
     cout<< "\t-c : clear backup directory"<<endl;
     cout<< "  > recover [FILENAME] [OPTION]"<<endl;
     cout<< "\t-n [NEWNAME] : recover file with new name"<<endl;
+    cout<< "  > compare [FILENAME] {OPTION_FILE}"<<endl;
     cout<< "  > ls"<<endl;
     cout<< "  > vi"<<endl;
     cout<< "  > vim"<<endl;
     cout<< "  > help"<<endl;
     cout<< "  > exit"<<endl;
+}
+
+bool b_compare (string fname, string targetFile="") {
+    if (!pModule.isRegular(fname)) {
+        fprintf(stderr, "not file : %s\n", fname.c_str());
+        return false;
+    }
+
+    if (targetFile.length() > 0) {
+        if (!pModule.isRegular(targetFile)) {
+            fprintf(stderr, "not file : %s\n", targetFile.c_str());
+            return false;
+        }
+        
+        if (lcsDriver(fname, targetFile) < 0) {
+            fprintf(stderr, "in [compare :: lcsDriver] false : %s\n", targetFile.c_str());
+            return false;
+        }
+        return true;
+    }
+
+    deque<string> fileQ = backupList(fname);
+    if (fileQ.empty()) {
+        fprintf(stderr, "%s backup File is empty\n", fname.c_str());
+        return false;
+    }
+
+    int idx;
+    cout<<"backup file list of \""<<fname<<"\""<<endl;
+    cout<<"Choose file to remove"<<endl;
+    cout<<"0. exit"<<endl;
+    for (int i = 0; i < (int)fileQ.size(); i++) {
+        string bckName = fileQ.at(i), tag = bckName.substr(bckName.length() - 13);
+        cout << i + 1 << ". " << tag << "\t" << pModule.fileSize(bckName) << "Bytes" << endl;
+    }
+    while (idx < -1 || idx >= (int)fileQ.size()) {
+        PROMPT;
+        cin>>idx;
+        --idx;
+    }
+    if (idx < 0)
+        return false;
+
+    string backupFile = fileQ.at(idx);
+    if (lcsDriver(fname, backupFile) < 0) {
+        fprintf(stderr, "in [compare :: lcsDriver] false : %s\n", fname.c_str());
+        return false;
+    }
+    return true;
+    
 }
 
 
