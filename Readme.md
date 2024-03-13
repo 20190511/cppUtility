@@ -97,7 +97,7 @@ make [option]
 > 1. (2024.02.06 ~) - IPC(프로세스간 통신) FIFO vs MessageQueue 연구 중... <-- source ~/.bashrc 미해결
 > 2. (2024.02.10 ~ 2024.02.11) : xv6 Assemble 프로그램 제작
 > 3. (2024.03.01 ~ 2024.03.02) : Linux Backup System 제작 
-> 4. (2024.03.10 ~ ) : {외부 프로젝트 : 주식 지표별 데이터 분석 진행중...}
+> 4. (2024.03.10 ~ ) : {[외부 프로젝트](https://github.com/20190511/StockProject/blob/master/GetAnaly.py) : 주식 지표별 데이터 분석 진행중...}
 
 ## Developer
 > Bae Junhyeong (20190511) : SSU, 4th Grade Student, System Programmer (Hoping)
