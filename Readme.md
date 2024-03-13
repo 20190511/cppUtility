@@ -1,7 +1,16 @@
 ## Linux 전용 Shell Scriptor :: (2024.02.03 ~ 2024.02.05) - Junhyeong(0511)
+---
 ### (2024.02.06 ~) - IPC(프로세스간 통신) FIFO vs MessageQueue 연구 중... <-- source ~/.bashrc 미해결
 ### (2024.02.10 ~ 2024.02.11) : xv6 Assemble 프로그램 제작
 ### (2024.03.01 ~ 2024.03.02) : Linux Backup System 제작 
+---
+
+# Supported Linux System Programming
+1. ScriptReader
+ i. ㅇ
+3. ㅇ
+
+
 
 - Asemble 과제 파일 다운로드
 [xv6 프로젝트](https://github.com/20190511/OS_xv6/tree/main)
