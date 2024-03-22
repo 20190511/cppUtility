@@ -13,6 +13,7 @@
 > (Linux OS 내부 파일 상태 및 디렉토리 상태를 알려주는 모듈)
 > 3. [stringExpand.h] : split, replace, strip 등 string 에 좀 더 유연하게 사용가능한 String 확장 헤더
 > 4. [lcs.hpp] : 자체제작한 File-Compare 지원 헤더 (LCS Alogrithm 이용)
+>  5. [makeTestor.cpp] : Vim 시험 대비용 Quiz 자동 생성기
 --- 
 
 # How to Use it?
