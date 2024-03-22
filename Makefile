@@ -17,6 +17,11 @@ backup: backup PREVINSTALL_BACKUP
 	$(CC) -o $@ $@.cpp -lcrypto
 	./$@ sha1
 
+quiz : makeTestor
+	@$(CC) -o $< $<.cpp
+	@./$<
+	@rm $<
+
 PREVINSTALL_BACKUP:
 	sudo apt-get install libssl-dev
 
