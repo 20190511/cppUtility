@@ -15,4 +15,3 @@ clean:
 	g++ -o $(ERASER) $(ERASER).cpp
 	$(ERASER) .
 	rm -rf $(ERASER)
-
