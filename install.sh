@@ -1,4 +1,3 @@
 #!/bin/bash
-
-cp set_file ../MakeFile
+cp set_file ../Makefile
 cp -r .vscode ../.vscode
