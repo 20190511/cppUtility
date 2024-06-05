@@ -1,0 +1,18 @@
+CC=g++
+OBJ=3
+FLAGS=-w
+
+ERASER=cppUtility/fileEraser
+
+all: $(OBJ)
+
+$(OBJ):
+	g++ -o $@ $@.cpp $(FLAGS)
+	./$@
+
+
+clean:
+	g++ -o $(ERASER) $(ERASER).cpp
+	$(ERASER) .
+	rm -rf $(ERASER)
+

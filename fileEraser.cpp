@@ -4,6 +4,7 @@
 #include <cstring>
 #include <deque>
 #include "ospath.h"
+
 using namespace std;
 char* curPath;
 
@@ -32,10 +33,13 @@ void eraseDirExecuteFile(const char *yourFile)
 int main(int argc , char* argv[])
 {
     curPath = argv[0];
+#ifdef OPT
+    eraseDirExecuteFile(OPT);
+#endif
     if (argc < 2) {
         eraseDirExecuteFile(getcwd(NULL, 0));
     }
-    
+
     for (int i = 1 ; i < argc ; i++) {
         eraseDirExecuteFile(*(argv+i));
     }

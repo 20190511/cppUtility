@@ -30,6 +30,6 @@ PREVINSTALL:
 	
 
 clean: fileEraser
-	$(CC) -o $< $<.cpp
+	$(CC) -o $< $<.cpp $(PARAM1)
 	./fileEraser
 	
